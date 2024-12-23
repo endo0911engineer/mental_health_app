@@ -1,0 +1,27 @@
+# ベースイメージ
+FROM golang:1.20 AS builder
+
+# 作業ディレクトリを設定
+WORKDIR /app
+
+# Goのモジュールをコピーして依存関係をダウンロード
+COPY go.mod go.sum ./
+RUN go mod download
+
+# アプリケーションのコードをコピー
+COPY . .
+
+# バイナリをビルド
+RUN go build -o main .
+
+# 実行用の軽量イメージ
+FROM debian:buster-slim
+
+# バイナリをコピー
+COPY --from=builder /app/main /app/main
+
+# ポートを公開（例: 8080）
+EXPOSE 8080
+
+# エントリーポイント
+ENTRYPOINT ["/app/main"]
