@@ -1,0 +1,6 @@
+fastapi
+pydantic
+scikit-learn
+tensorflow
+numpy
+pickle-mixin

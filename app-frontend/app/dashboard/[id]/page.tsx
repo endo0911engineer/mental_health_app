@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation';
-import { getEmotions, saveEmotion, deleteEmotion } from '../../api'; 
+import { getEmotions, saveEmotion, deleteEmotion, updateEmotion } from '../../api'; 
 import { useEffect, useState } from 'react';
 import CalendarComponent from '../../components/CalendarComponent';
 import EmotionGraph from '../../components/EmotionGraph';
@@ -79,7 +79,13 @@ const DashboardPage = () => {
         if (!selectedDate || !userId) return;
 
         try {
-            const newEmotion = await saveEmotion(selectedDate, inputText, userId);
+            let newEmotion: any;
+            if (isEditing) {
+                newEmotion = await updateEmotion(selectedDate, inputText, userId);
+            } else {
+                newEmotion = await saveEmotion(selectedDate, inputText, userId);
+            }
+            
             setEmotions((prev) => 
                 prev.filter((e) => e.date !== selectedDate).concat(newEmotion)
             );
@@ -141,7 +147,7 @@ const DashboardPage = () => {
                         onChange={(e) => setInputText(e.target.value)}
                         placeholder="Edit your emotion..."
                         />
-                        <button onClick={handleSaveEmotion}>Save</button>
+                        <button onClick={handleSaveEmotion}>Update</button>
                         <button onClick={handleDeleteEmotion}>Delete</button>
                         </>
                     ) : (

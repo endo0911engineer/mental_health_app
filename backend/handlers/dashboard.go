@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func HandleDashboard(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +30,76 @@ func HandleDashboard(w http.ResponseWriter, r *http.Request) {
 // HandleDashboard handles requests to the dashboard
 func SaveEmotionHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// クエリパラメータから user_id を取得
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		log.Printf("Missing user_id in query parameters")
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	// リクエストボディを読み取ってログに出力
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Failed to read request body: %v", err)
+		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		return
+	}
+
+	// ボディの内容をログに出力
+	fmt.Println("Request Body:", string(body))
+
+	var emotion models.Emotion
+	err = json.Unmarshal(body, &emotion)
+	if err != nil {
+		log.Printf("Invalid request body: %v", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	userIDInt, err := strconv.Atoi(userID)
+	if err != nil {
+		log.Printf("Invalid user_id: %v", err)
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+	// クエリパラメータから取得したuser_idをemotionにセット
+	emotion.UserID = userIDInt
+
+	// Python APIで感情スコアを分析
+	score, err := analyzeEmotionWithAI(emotion.Emotion)
+	if err != nil {
+		log.Printf("Failed to analyze emotion: %v", err)
+		http.Error(w, "Failed to analyze emotion", http.StatusInternalServerError)
+		return
+	}
+
+	// 分析したスコアをEmotionにセット
+	emotion.Score = int(score.Score)
+
+	// 感情をデーターベースに保存
+	err = db.SaveEmotion(emotion)
+	if err != nil {
+		log.Printf("Failed to save emotion to database: %v", err)
+		http.Error(w, "Failed to save emotion", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Emotion saved successfully: %+v", emotion)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Emotion saved successfully",
+	})
+}
+
+// UpdateEmotionHandler handles requests to update an emotion
+func UpdateEmotionHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
@@ -164,8 +235,14 @@ func DeleteEmotionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	dateTim, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		http.Error(w, "Invalid date parameter", http.StatusBadRequest)
+		return
+	}
+
 	// 感情データを削除
-	err = db.DeleteEmotion(userID, date)
+	err = db.DeleteEmotion(userID, dateTim)
 	if err != nil {
 		http.Error(w, "Failed to delete emotion", http.StatusInternalServerError)
 		return

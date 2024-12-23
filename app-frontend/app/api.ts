@@ -90,6 +90,30 @@ export const saveEmotion = async (date: string, emotionText: string, userId: num
   return await response.json();
 };
 
+export const updateEmotion = async (date: string, emotionText: string, userId: number) => {
+  const isoDate = new Date(date).toISOString();
+
+  const response = await fetch(`${BASE_URL}/dashboard/updateEmotion?user_id=${userId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    body: JSON.stringify({
+      date: isoDate,
+      emotion: emotionText,
+    }),
+  });
+
+  console.log(response);
+
+  if (!response.ok) {
+    throw new Error('Failed to save emotion');
+  }
+
+  return await response.json();
+};
+
 export const getEmotions = async (userId: number) => {
   const response = await fetch(`${BASE_URL}/dashboard/getEmotions?user_id=${userId}`, {
     method: 'GET',
@@ -116,10 +140,12 @@ export const deleteEmotion= async (date: string, userId: number) => {
     },
   });
 
-  console.log(response)
+  const responseText = await response.text(); // レスポンスをテキストとして取得
+
+  console.log(responseText)
   if (!response.ok) {
     throw new Error('Failed to delete emotion');
   }
 
-  return await response.json();
+  return responseText;
 }; 

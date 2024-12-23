@@ -91,6 +91,17 @@ func SaveEmotion(emotion models.Emotion) error {
 	return err
 }
 
+// 更新された感情をデータベースに保存
+func UpdateEmotion(emotion models.Emotion) error {
+	query := `
+	UPDATE emotions
+	SET emotion = ?, score = ? 
+	WHERE user_id = ? AND date = ?
+	`
+	_, err := db.Exec(query, emotion.Emotion, emotion.Score, emotion.UserID, emotion.Date)
+	return err
+}
+
 // 感情をデータベースから削除
 func DeleteEmotion(userID int, date time.Time) error {
 	query := `
