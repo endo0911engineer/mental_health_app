@@ -253,7 +253,7 @@ func DeleteEmotionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Python APIを呼び出して感情分析を行う
-func analyzeEmotionWithAI(emotion string) (*EmotionAnalysisResult, error) {
+func analyzeEmotionWithAI(emotion string) (*models.EmotionAnalysisResult, error) {
 	// PythonのAPIエンドポイント
 	url := "http://localhost:8000/predict"
 
@@ -283,7 +283,7 @@ func analyzeEmotionWithAI(emotion string) (*EmotionAnalysisResult, error) {
 	}
 
 	// レスポンスをパース
-	var result EmotionAnalysisResult
+	var result models.EmotionAnalysisResult
 	err = json.Unmarshal(body, &result)
 	if err != nil {
 		return nil, err
@@ -292,6 +292,64 @@ func analyzeEmotionWithAI(emotion string) (*EmotionAnalysisResult, error) {
 	return &result, nil
 }
 
-type EmotionAnalysisResult struct {
-	Score int `json:"score"`
+func AnalyzeTextHandler(w http.ResponseWriter, r *http.Request) {
+	url := "http://localhost:8000/analyze"
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// リクエストからuser_idを取得
+	userIDStr := r.URL.Query().Get("user_id")
+	if userIDStr == "" {
+		http.Error(w, "Missing user_id parameter", http.StatusBadRequest)
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		http.Error(w, "Invalid user_id parameter", http.StatusBadRequest)
+		return
+	}
+
+	// DBから過去の感情データを取得
+	emotions, err := db.GetPastEmotions(userID)
+	if err != nil {
+		http.Error(w, "Failed to receive past emotions", http.StatusInternalServerError)
+		return
+	}
+
+	// 感情データを一つのテキストとしてまとめる
+	combinedText := ""
+	for _, emotion := range emotions {
+		combinedText += emotion.Emotion + " "
+	}
+
+	// フロントエンドから日記テキストを受け取る
+	requestBody, err := json.Marshal(map[string]string{
+		"text": combinedText,
+	})
+	if err != nil {
+		http.Error(w, "Failed to marshal request body", http.StatusInternalServerError)
+		return
+	}
+
+	// PythonにPOSTリクエストを送る
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		http.Error(w, "Failed to connect to Python service", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Pythonからのレスポンスをフロントに返す
+	responseData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, "Failed to read Python response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(responseData)
 }

@@ -148,4 +148,22 @@ export const deleteEmotion= async (date: string, userId: number) => {
   }
 
   return responseText;
-}; 
+};
+
+export const generateGraph = async (userId: number, emotionText: string) => {
+  const response = await fetch(`${BASE_URL}/dashboard/generateGraph?user_id=${userId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    body: JSON.stringify({ emotion: emotionText})
+  });
+
+  console.log(response)
+  if (!response.ok) {
+    throw new Error('Error to get emotion');
+  }
+
+  return await response.json()
+} 

@@ -135,3 +135,27 @@ func GetEmotionsByUserID(userID int) ([]models.Emotion, error) {
 
 	return emotions, nil
 }
+
+// ユーザーIDに基づいて過去の感情データを取得
+func GetPastEmotions(userID int) ([]models.Emotion, error) {
+	var emotions []models.Emotion
+	query := `SELECT emotion_text FROM emotions WHERE user_id = ? ORDER BY date DESC`
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var emotion models.Emotion
+		err := rows.Scan(&emotion.ID, &emotion.UserID, &emotion.Emotion, &emotion.Score, &emotion.Date, &emotion.CreatedAt)
+		if err != nil {
+			log.Printf("Error scanning row: %v", err)
+			return nil, err
+		}
+
+		emotions = append(emotions, emotion)
+	}
+
+	return emotions, nil
+}

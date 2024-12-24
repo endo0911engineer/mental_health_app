@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation';
-import { getEmotions, saveEmotion, deleteEmotion, updateEmotion } from '../../api'; 
+import { getEmotions, saveEmotion, deleteEmotion, updateEmotion, generateGraph } from '../../api'; 
 import { useEffect, useState } from 'react';
 import CalendarComponent from '../../components/CalendarComponent';
 import EmotionGraph from '../../components/EmotionGraph';
@@ -14,6 +14,7 @@ const DashboardPage = () => {
     const [currentEmotion, setCurrentEmotion] = useState<{ text: string; score: number } | null>(null);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [inputText, setInputText] = useState<string>('');
+    const [graphImage, setGraphImage] = useState<string | null>(null);
     const router = useRouter();
 
     const handleLogout = () => {
@@ -118,6 +119,18 @@ const DashboardPage = () => {
         }
     };
 
+    const handleGenerateGraph = async () => {
+        const userId = parseInt(localStorage.getItem('userId') || '', 10);
+        if (!userId) return;
+
+        try {
+            const data = await generateGraph(userId, inputText);
+            setGraphImage(data.graph_image);
+        } catch (error) {
+            console.error('Error generating graph:', error)
+        }
+    };
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -159,6 +172,15 @@ const DashboardPage = () => {
                         />
                         <button onClick={handleSaveEmotion}>Add Emotion</button>
                         </>
+                    )}
+
+                    <button onClick={handleGenerateGraph}>Generate Graph</button>
+
+                    {graphImage && (
+                        <div className={styles.graphImageWrapper}>
+                            <h4>Generated Graph:</h4>
+                            <img src={`data:image/png;base64, ${graphImage}`} alt="Graph"/>
+                        </div>
                     )}
                 </div>
             )}
