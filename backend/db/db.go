@@ -95,7 +95,7 @@ func SaveEmotion(emotion models.Emotion) error {
 func UpdateEmotion(emotion models.Emotion) error {
 	query := `
 	UPDATE emotions
-	SET emotion = ?, score = ? 
+	SET emotion_text = ?, score = ? 
 	WHERE user_id = ? AND date = ?
 	`
 	_, err := db.Exec(query, emotion.Emotion, emotion.Score, emotion.UserID, emotion.Date)
@@ -147,11 +147,15 @@ func GetPastEmotions(userID int) ([]models.Emotion, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var emotion models.Emotion
-		err := rows.Scan(&emotion.ID, &emotion.UserID, &emotion.Emotion, &emotion.Score, &emotion.Date, &emotion.CreatedAt)
+		var emotionText string
+		err := rows.Scan(&emotionText)
 		if err != nil {
 			log.Printf("Error scanning row: %v", err)
 			return nil, err
+		}
+
+		emotion := models.Emotion{
+			Emotion: emotionText,
 		}
 
 		emotions = append(emotions, emotion)

@@ -15,6 +15,7 @@ const DashboardPage = () => {
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [inputText, setInputText] = useState<string>('');
     const [graphImage, setGraphImage] = useState<string | null>(null);
+    const [wordcloudImage, setWordcloudImage] = useState<string | null>(null);
     const router = useRouter();
 
     const handleLogout = () => {
@@ -125,7 +126,9 @@ const DashboardPage = () => {
 
         try {
             const data = await generateGraph(userId, inputText);
+            console.log('Response from API:', data);
             setGraphImage(data.graph_image);
+            setWordcloudImage(data.wordcloud_image);
         } catch (error) {
             console.error('Error generating graph:', error)
         }
@@ -179,7 +182,13 @@ const DashboardPage = () => {
                     {graphImage && (
                         <div className={styles.graphImageWrapper}>
                             <h4>Generated Graph:</h4>
-                            <img src={`data:image/png;base64, ${graphImage}`} alt="Graph"/>
+                            <img src={`data:image/png;base64,${graphImage}`} alt="Graph"/>
+                        </div>
+                    )}
+                    {wordcloudImage && (
+                        <div className={styles.wordcloudImageWrapper}>
+                            <h4>Word Cloud:</h4>
+                            <img src={`data:image/png;base64,${wordcloudImage}`} alt="Graph"/>
                         </div>
                     )}
                 </div>

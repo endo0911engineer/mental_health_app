@@ -21,6 +21,7 @@ func main() {
 	mux.HandleFunc("/dashboard/updateEmotion", handlers.UpdateEmotionHandler)
 	mux.HandleFunc("/dashboard/getEmotions", handlers.GetEmotionsHandler)
 	mux.HandleFunc("/dashboard/deleteEmotion", handlers.DeleteEmotionHandler)
+	mux.HandleFunc("/dashboard/generateGraph", handlers.GenerateGraphHandler)
 	mux.HandleFunc("/dashboard", middleware.AuthMiddleware(handlers.HandleDashboard))
 
 	// Wrap the mux with CORS middleware

@@ -11,7 +11,7 @@ router = APIRouter()
 emotion_labels = ["Joy", "Sadness", "Anticipation", "Surprise", "Anger", "Fear", "Disgust", "Trust"]
 
 # モデルとトークナイザーの読み込み
-MODEL_PATH = "./ai_model/emotion_model"  # 保存したモデルのパス
+MODEL_PATH = "./scripts_py/emotion_model"  # 保存したモデルのパス
 tokenizer = BertTokenizer.from_pretrained(MODEL_PATH)
 model = BertForSequenceClassification.from_pretrained(MODEL_PATH, use_safetensors=True)
 model.eval()  # 推論モードに設定

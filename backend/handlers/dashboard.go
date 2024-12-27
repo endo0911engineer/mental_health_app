@@ -152,9 +152,9 @@ func UpdateEmotionHandler(w http.ResponseWriter, r *http.Request) {
 	emotion.Score = int(score.Score)
 
 	// 感情をデーターベースに保存
-	err = db.SaveEmotion(emotion)
+	err = db.UpdateEmotion(emotion)
 	if err != nil {
-		log.Printf("Failed to save emotion to database: %v", err)
+		log.Printf("Failed to update emotion to database: %v", err)
 		http.Error(w, "Failed to save emotion", http.StatusInternalServerError)
 		return
 	}
@@ -292,8 +292,8 @@ func analyzeEmotionWithAI(emotion string) (*models.EmotionAnalysisResult, error)
 	return &result, nil
 }
 
-func AnalyzeTextHandler(w http.ResponseWriter, r *http.Request) {
-	url := "http://localhost:8000/analyze"
+func GenerateGraphHandler(w http.ResponseWriter, r *http.Request) {
+	url := "http://localhost:8000/extract_keywords"
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -335,6 +335,10 @@ func AnalyzeTextHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ボディの内容をログに出力
+	fmt.Println("Request Body:", string(requestBody))
+	fmt.Println("Combined Text:", combinedText)
+
 	// PythonにPOSTリクエストを送る
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
@@ -349,6 +353,8 @@ func AnalyzeTextHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to read Python response", http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Println("Response Data from Python API:", string(responseData))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(responseData)
