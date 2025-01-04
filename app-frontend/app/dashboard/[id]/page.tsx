@@ -159,21 +159,23 @@ const DashboardPage = () => {
                         <>
                         <p>Current: Emotion: {currentEmotion?.text}</p>
                         <textarea
+                        className={styles.inputArea}
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         placeholder="Edit your emotion..."
                         />
-                        <button onClick={handleSaveEmotion}>Update</button>
-                        <button onClick={handleDeleteEmotion}>Delete</button>
+                        <button className={styles.button} onClick={handleSaveEmotion}>Update</button>
+                        <button className={styles.button} onClick={handleDeleteEmotion}>Delete</button>
                         </>
                     ) : (
                         <>
                         <textarea
+                        className={styles.inputArea}
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         placeholder="Write about your emotion..."
                         />
-                        <button onClick={handleSaveEmotion}>Add Emotion</button>
+                        <button className={styles.button} onClick={handleSaveEmotion}>Add Emotion</button>
                         </>
                     )}
 
@@ -181,13 +183,13 @@ const DashboardPage = () => {
 
                     {graphImage && (
                         <div className={styles.graphImageWrapper}>
-                            <h4>Generated Graph:</h4>
+                            <h4 className={styles.h4Title}>Generated Graph:</h4>
                             <img src={`data:image/png;base64,${graphImage}`} alt="Graph"/>
                         </div>
                     )}
                     {wordcloudImage && (
                         <div className={styles.wordcloudImageWrapper}>
-                            <h4>Word Cloud:</h4>
+                            <h4 className={styles.h4Title}>Word Cloud:</h4>
                             <img src={`data:image/png;base64,${wordcloudImage}`} alt="Graph"/>
                         </div>
                     )}

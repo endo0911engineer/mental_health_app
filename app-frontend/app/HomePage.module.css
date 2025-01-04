@@ -1,0 +1,119 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #3b82f6, #6366f1, #8b5cf6);
+    color: white;
+    text-align: center;
+    padding: 0 2rem; /* 横方向の余白を追加 */
+  }
+  
+  .header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box; /* パディング込みで幅計算 */
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .navLink {
+    margin-left: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  
+  .navLink:hover {
+    background: white;
+    color: #4c1d95;
+  }
+  
+  .navSignUp {
+    background: white;
+    color: #4c1d95;
+  }
+  
+  .navSignUp:hover {
+    background: #4c1d95;
+    color: white;
+  }
+
+  .navWrapper {
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: flex-end; 
+    gap: 1rem; 
+  }
+  
+  .heading {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+  
+  .highlight {
+    color: #facc15;
+  }
+  
+  .description {
+    font-size: 1.125rem;
+    max-width: 40rem;
+    margin: 0 auto 2rem;
+  }
+  
+  .ctaButton {
+    padding: 0.75rem 2rem;
+    background: #facc15;
+    color: #4c1d95;
+    font-weight: bold;
+    font-size: 1.125rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .ctaButton:hover {
+    background: #eab308;
+  }
+  
+  .features {
+    margin-top: 3rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+  }
+  
+  .featureCard {
+    background: white;
+    color: #4c1d95;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 18rem;
+    text-align: left;
+  }
+  
+  .featureCard h3 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .footer {
+    margin-top: 3rem;
+    font-size: 0.875rem;
+    color: #d1d5db;
+  }

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signUp } from '../api';
 import styles from '../SignUpPage.module.css';
+import Link from "next/link";
 
 interface UserData {
     email: string,
@@ -54,33 +55,42 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className={styles.conrtainer}>
-            <h1 className={styles.title}>Sign Up</h1>
-            <form onSubmit={handleSignUp}>
-                <input
-                className={styles.input}
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                />
-                {emailError && <p className={styles.error}>{emailError}</p>}
-
-                <input
-                className={styles.input}
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                />
-                {passwordError && <p className={styles.error}>{passwordError}</p>}
-
-                <button className={styles.button} type="submit">Sign Up</button>
-                {error && <p className={styles.error}>{error}</p>}
-            </form>
-        </div>
+        <div className={styles.container}>
+        <h1 className={styles.title}>Sign Up</h1>
+        <form onSubmit={handleSignUp}>
+          <input
+            className={styles.input}
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          {emailError && <p className={styles.error}>{emailError}</p>}
+  
+          <input
+            className={styles.input}
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {passwordError && <p className={styles.error}>{passwordError}</p>}
+  
+          <button className={styles.button} type="submit">
+            Sign Up
+          </button>
+          {error && <p className={styles.error}>{error}</p>}
+        </form>
+  
+        <p className={styles.signupLink}>
+          Already have an account?{" "}
+          <Link href="/login" className={styles.link}>
+            Log In
+          </Link>
+        </p>
+      </div>
     );
 };
 
