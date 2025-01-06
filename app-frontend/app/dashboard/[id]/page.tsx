@@ -50,9 +50,24 @@ const DashboardPage = () => {
                 const highlights: { [key: string]: string } = {};
                 organizedEmotions.forEach((emotion: { date: string; score: number; text: string }) => {
                 const { date, score } = emotion;
-                if (score >= 5) highlights[date] = 'green';
-                else if (score >= 3) highlights[date] = 'yellow';
-                else highlights[date] = 'red';
+                switch (score) {
+                    case 0: //Joy
+                    case 7: //Trust
+                    case 2: //Anticipation
+                        highlights[date] = "green";
+                        break;
+                    case 1: //Sadness
+                    case 4: //Anger
+                    case 5: //Fear
+                    case 6: //Disgust
+                        highlights[date] = "red";
+                        break;
+                    case 3: //Surprise
+                        highlights[date] = "yellow";
+                        break;
+                    default:
+                        highlights[date] = "gray";
+                }
             });
 
                 setHighlightedDates(highlights);
